@@ -14,9 +14,9 @@ const basename =
 
 createRoot(document.getElementById("root")).render(
     <BrowserRouter basename={basename}>
+      
     <GoogleOAuthProvider clientId={CLIENT_ID}>
       <App />
-    
     </GoogleOAuthProvider>
     </BrowserRouter>
 );
