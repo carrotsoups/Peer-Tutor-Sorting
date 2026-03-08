@@ -3,8 +3,9 @@ import {
   DrivePickerDocsView,
 } from "@googleworkspace/drive-picker-react"
 
-import {useState} from "react"
 import { useAuth } from "../components/AuthContext"
+import { useSheet } from "../context/SheetContext"
+import { useNavigate } from "react-router-dom"
 
 
 
@@ -13,7 +14,8 @@ const APP_ID = import.meta.env.VITE_GOOGLE_APP_ID
 
 const GoogleDrivePicker = () => {
   const { user } = useAuth()
-  const [rows, setRows] = useState([])
+  const { setRows } = useSheet()
+  const navigate = useNavigate()
 
   const handlePicked = async (e) => {
     const file = e.detail.docs[0]
@@ -90,6 +92,9 @@ const GoogleDrivePicker = () => {
     console.log("Sheet rows:", sheetData.values)
 
     setRows(sheetData.values || [])
+    
+    // Navigate to scheduling page after successful data load
+    navigate('/schedule')
   }
 
   return (
@@ -97,8 +102,7 @@ const GoogleDrivePicker = () => {
       <DrivePicker
         client-id={CLIENT_ID}
         app-id={APP_ID}
-        prompt="consent"
-        accessToken={user && user.accessToken}
+        oauth-token={user?.accessToken}
         onPicked={handlePicked}
         onCanceled={() => console.log("Picker cancelled")}
         onOAuthError={(err) => console.error("OAuth Error:", err)}
@@ -108,22 +112,6 @@ const GoogleDrivePicker = () => {
           mimeTypes="application/vnd.google-apps.spreadsheet"
         />
       </DrivePicker>
-
-      <div style={{ marginTop: 20 }}>
-        {rows.length > 0 && (
-          <table border="1" cellPadding="5">
-            <tbody>
-              {rows.map((row, i) => (
-                <tr key={i}>
-                  {row.map((cell, j) => (
-                    <td key={j}>{cell}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
-      </div>
     </div>
   )
 }

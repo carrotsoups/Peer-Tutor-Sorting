@@ -1,0 +1,552 @@
+.scheduling-container {
+  display: flex;
+  height: 100vh;
+  padding: 20px;
+  gap: 15px;
+  background-color: #f5f5f5;
+  box-sizing: border-box;
+}
+
+.sidebar {
+  width: 200px;
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.tutors-sidebar {
+  border-left: 4px solid #4CAF50;
+}
+
+.students-sidebar {
+  border-left: 4px solid #2196F3;
+}
+
+.sidebar h3 {
+  margin: 0 0 12px 0;
+  color: #333;
+  font-size: 16px;
+}
+
+.person-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.person-card {
+  padding: 8px;
+  border-radius: 4px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  border: 2px solid transparent;
+  word-wrap: break-word;
+  font-size: 12px;
+}
+
+.person-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.person-name {
+  font-weight: bold;
+  font-size: 11px;
+  color: #333;
+  margin-bottom: 2px;
+}
+
+.person-grade {
+  font-size: 10px;
+  color: #666;
+}
+
+.schedule-grid {
+  flex: 1;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+  min-width: 0;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.grid-header {
+  display: grid;
+  grid-template-columns: 120px repeat(5, 1fr);
+  background: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+
+.day-header {
+  padding: 12px 8px;
+  text-align: center;
+  font-weight: bold;
+  color: #495057;
+  border-right: 1px solid #dee2e6;
+  font-size: clamp(12px, 2vw, 16px);
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.day-header:last-child {
+  border-right: none;
+}
+
+.grid-row {
+  display: grid;
+  grid-template-columns: 120px repeat(5, 1fr);
+  border-bottom: 1px solid #dee2e6;
+  flex: 1;
+  min-height: 0;
+}
+
+.time-label {
+  padding: 12px 8px;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: #495057;
+  border-right: 2px solid #dee2e6;
+  font-size: clamp(12px, 2vw, 16px);
+  min-width: 0;
+  min-height: 100px;
+}
+
+.schedule-cell {
+  min-height: 100px;
+  padding: 6px;
+  border-right: 1px solid #dee2e6;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: background-color 0.2s ease;
+  min-width: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.schedule-cell:last-child {
+  border-right: none;
+}
+
+.schedule-cell.can-drop {
+  background-color: #d4edda;
+  border: 2px dashed #28a745;
+}
+
+.schedule-cell.cannot-drop {
+  background-color: #f8d7da;
+  border: 2px dashed #dc3545;
+}
+
+.pairing-card {
+  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  border: 2px solid #ffc107;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: clamp(10px, 1.5vw, 12px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  word-wrap: break-word;
+  flex-shrink: 0;
+}
+
+.pairing-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pairing-card.auto-scheduled {
+  background: linear-gradient(135deg, #c7e9c0, #a8e6b8);
+  border: 2px solid #28a745;
+}
+
+.pairing-card.auto-scheduled:hover {
+  transform: scale(1.02);
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+}
+
+.tutor-info, .student-info {
+  margin-bottom: 4px;
+}
+
+.tutor-name, .student-name {
+  font-weight: bold;
+  color: #333;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tutor-grade, .student-grade {
+  color: #666;
+  font-size: 0.8em;
+}
+
+.tutor-info {
+  border-bottom: 1px solid #ffc107;
+  padding-bottom: 4px;
+  margin-bottom: 4px;
+}
+
+.pairing-area {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  min-width: clamp(250px, 35vw, 380px);
+  max-width: 90vw;
+}
+
+.pairing-area h3 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: #495057;
+  text-align: center;
+}
+
+.auto-schedule-btn {
+  width: 100%;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.auto-schedule-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 86, 179, 0.3);
+}
+
+.auto-schedule-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 86, 179, 0.2);
+}
+
+.pairing-zone {
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  padding: 8px;
+  min-height: 70px;
+  background: white;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 0.2s ease;
+  color: #6c757d;
+  font-size: 12px;
+  text-align: center;
+}
+
+.pairing-zone:hover {
+  border-color: #007bff;
+}
+
+.pending-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pending-tutor, .pending-student {
+  background: #e9ecef;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.pending-tutor {
+  border-left: 4px solid #28a745;
+}
+
+.pending-student {
+  border-left: 4px solid #007bff;
+}
+
+.pending-tutor button, .pending-student button {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+}
+
+.pending-tutor button:hover, .pending-student button:hover {
+  color: #dc3545;
+}
+
+.active-pairing {
+  margin-top: 12px;
+}
+
+.pairing-block {
+  background: linear-gradient(135deg, #28a745, #20c997);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: grab;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  color: white;
+}
+
+.pairing-block:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #1e7e34;
+}
+
+.pairing-block:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+.pairing-tutor, .pairing-student {
+  color: white;
+  font-size: 11px;
+  margin-bottom: 2px;
+  font-weight: 600;
+}
+
+.pairing-instruction {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 9px;
+  text-align: center;
+  margin-top: 4px;
+  font-style: italic;
+  font-weight: 500;
+}
+
+
+
+/* Comprehensive Responsive Design */
+@media (max-width: 1400px) {
+  .sidebar {
+    width: 180px;
+  }
+
+  .grid-header, .grid-row {
+    grid-template-columns: 110px repeat(5, 1fr);
+  }
+
+  .time-label, .day-header {
+    padding: 10px 6px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .scheduling-container {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    width: 100%;
+    max-height: 120px;
+    flex-shrink: 0;
+  }
+
+  .schedule-grid {
+    order: -1;
+    flex: 1;
+  }
+
+  .pairing-area {
+    position: static;
+    transform: none;
+    margin-top: 20px;
+    width: 100%;
+    max-width: none;
+  }
+
+  .grid-header, .grid-row {
+    grid-template-columns: 100px repeat(5, 1fr);
+  }
+
+  .time-label, .day-header {
+    padding: 8px;
+    font-size: 12px;
+  }
+
+  .schedule-cell {
+    min-height: 80px;
+  }
+}
+
+@media (max-width: 768px) {
+  .scheduling-container {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .sidebar {
+    max-height: 100px;
+  }
+
+  .person-card {
+    padding: 6px;
+  }
+
+  .person-name {
+    font-size: 10px;
+  }
+
+  .person-grade {
+    font-size: 9px;
+  }
+
+  .grid-header, .grid-row {
+    grid-template-columns: 80px repeat(5, 1fr);
+  }
+
+  .time-label, .day-header {
+    padding: 6px;
+    font-size: 11px;
+  }
+
+  .day-header {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .schedule-cell {
+    min-height: 70px;
+    padding: 4px;
+  }
+
+  .pairing-card {
+    padding: 4px;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  .scheduling-container {
+    padding: 5px;
+    gap: 5px;
+  }
+
+  .sidebar {
+    padding: 8px;
+    max-height: 80px;
+  }
+
+  .grid-header, .grid-row {
+    grid-template-columns: 60px repeat(5, 1fr);
+  }
+
+  .time-label, .day-header {
+    padding: 4px;
+    font-size: 10px;
+  }
+
+  .day-header {
+    height: 40px;
+  }
+
+  .schedule-cell {
+    min-height: 60px;
+    padding: 2px;
+  }
+
+  .pairing-card {
+    padding: 3px;
+    font-size: 8px;
+  }
+
+  .pairing-area {
+    padding: 8px;
+  }
+
+  .pairing-zone {
+    min-height: 50px;
+    font-size: 10px;
+  }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1800px) {
+  .sidebar {
+    width: 220px;
+  }
+
+  .grid-header, .grid-row {
+    grid-template-columns: 140px repeat(5, 1fr);
+  }
+
+  .schedule-cell {
+    min-height: 120px;
+  }
+
+  .pairing-card {
+    padding: 8px;
+    font-size: 13px;
+  }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .pairing-card, .person-card {
+    border-width: 1px;
+  }
+}
+
+/* Portrait orientation adjustments */
+@media (orientation: portrait) and (max-width: 900px) {
+  .scheduling-container {
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .schedule-grid {
+    max-height: 60vh;
+  }
+}
