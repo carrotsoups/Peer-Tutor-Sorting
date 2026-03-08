@@ -11,6 +11,8 @@ export function Home(){
     const [filterTerm, setFilterTerm] = useState('');
     const [filterColumn, setFilterColumn] = useState(0);
 
+    
+
     // Apply sorting and filtering
     let processedRows = rows;
     if (filterTerm) {
