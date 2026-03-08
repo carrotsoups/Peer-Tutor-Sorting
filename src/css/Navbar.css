@@ -15,6 +15,24 @@
   padding: 0 2rem;
 }
 
+.navbar-footer {
+  position: absolute;
+  bottom: 0.2rem;
+  right: 0.5rem;
+}
+
+.privacy-link {
+  color: #ccc;
+  font-size: 0.7rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.privacy-link:hover {
+  color: #fff;
+}
+
 .navbar-brand {
   display: flex;
   align-items: center;

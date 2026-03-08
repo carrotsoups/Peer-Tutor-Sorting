@@ -32,6 +32,11 @@ export function Navbar() {
           )}
         </div>
       </div>
+      <div className="navbar-footer">
+        <a href="/privacy" className="privacy-link" onClick={(e) => { e.preventDefault(); navigate('/privacy'); }}>
+          Privacy Policy
+        </a>
+      </div>
     </nav>
   );
 }
