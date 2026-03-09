@@ -45,7 +45,7 @@ export function Landing(){
     const previewTable = previewRows.length > 0 && (
       <div style={{ marginTop: '1rem' }}>
         <h3>Preview</h3>
-        <table border="1" cellPadding="5">
+        <table className="preview-table">
           <tbody>
             {previewRows.map((row, i) => (
               <tr key={i}>
@@ -56,9 +56,11 @@ export function Landing(){
             ))}
           </tbody>
         </table>
-        <button onClick={handleConfirm} style={{ marginTop: '1rem' }}>
-          Confirm and Schedule
-        </button>
+        <div className="button-group">
+          <button onClick={handleConfirm}>
+            Confirm and Schedule
+          </button>
+        </div>
       </div>
     );
 
@@ -67,6 +69,7 @@ export function Landing(){
         <div className="landing-content">
           <h1>Peer Tutor Sorting</h1>
           <p className="app-description">
+            oh brother why do i need this for google app veri brubv. 
             Streamline peer tutoring programs with intelligent scheduling. Our application helps educational institutions
             efficiently match tutors with students based on availability, grade levels, and scheduling preferences.
             Upload your Google Sheets data and use our drag-and-drop interface to create optimal tutoring schedules,
@@ -75,20 +78,21 @@ export function Landing(){
 
           {mode === 'choose' && (
             <div className="features-list">
-              <h3>How would you like to provide data?</h3>
-              <button onClick={() => googleLogin()} className="google-login-btn">
-                Connect with Google Drive
-              </button>
-              <button
-                onClick={() => {
-                  setMode('manual');
-                  setManualText('');
-                  setPreviewRows([]);
-                }}
-                style={{ marginLeft: '1rem' }}
-              >
-                Paste Spreadsheet Manually
-              </button>
+              <div className="button-group">
+                <button onClick={() => googleLogin()} className="google-login-btn">
+                  Connect with Google Drive
+                </button>
+                <button
+                  onClick={() => {
+                    setMode('manual');
+                    setManualText('');
+                    setPreviewRows([]);
+                  }}
+                  className="google-login-btn"
+                >
+                  Paste Spreadsheet Manually
+                </button>
+              </div>
             </div>
           )}
 
@@ -98,17 +102,17 @@ export function Landing(){
               <p>Copy a range from Google Sheets or a CSV file and paste below (tabs or commas).</p>
               <textarea
                 rows={10}
-                cols={60}
+                className="manual-textarea"
                 value={manualText}
                 onChange={(e) => setManualText(e.target.value)}
               />
-              <div style={{ marginTop: '0.5rem' }}>
+              <div className="button-group">
                 <button onClick={handlePreview}>Preview</button>
                 <button onClick={() => {
                     setMode('choose');
                     setManualText('');
                     setPreviewRows([]);
-                  }} style={{ marginLeft: '1rem' }}>
+                  }}>
                   Back
                 </button>
               </div>

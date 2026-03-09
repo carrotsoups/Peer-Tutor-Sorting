@@ -150,7 +150,7 @@ export function Home(){
                     {/* Link to Scheduling */}
                     <div style={{ marginTop: '3rem', textAlign: 'center' }}>
                         <a href="/schedule" style={{ 
-                            backgroundColor: '#007bff', 
+                            backgroundColor: '#bb2822', 
                             color: 'white', 
                             padding: '15px 30px', 
                             textDecoration: 'none', 

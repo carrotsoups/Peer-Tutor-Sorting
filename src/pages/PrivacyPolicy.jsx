@@ -6,8 +6,15 @@ export function PrivacyPolicy() {
     <div className="container">
       <div className="content">
         <h1>Privacy Policy</h1>
-
         <h2>Information We Collect</h2>
+        <p>
+          if you found this page congrats google forced me to have this bruabhhahhahhhhah i just want ot be able to log in and now the schoolboards blocking everything grrrrrrrr
+        </p>
+
+        <div style={{ textAlign: 'center', margin: '2rem 0' }}>
+          <img src="/rat.png" alt="Rat" style={{ maxWidth: '300px', height: 'auto' }} />
+        </div>
+
         <p>
           We collect information you provide directly to us, such as when you create an account,
           use our services, or contact us for support. This may include your name, email address,

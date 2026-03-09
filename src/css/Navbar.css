@@ -1,5 +1,5 @@
 .navbar {
-  background-color: #333;
+  background-color: black;
   padding: 1rem 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   position: sticky;
@@ -22,7 +22,7 @@
 }
 
 .privacy-link {
-  color: #ccc;
+  color: #bdbec0;
   font-size: 0.7rem;
   text-decoration: none;
   cursor: pointer;
@@ -30,7 +30,7 @@
 }
 
 .privacy-link:hover {
-  color: #fff;
+  color: white;
 }
 
 .navbar-brand {
@@ -47,7 +47,7 @@
 }
 
 .navbar-brand h1:hover {
-  color: #4CAF50;
+  color: #bb2822;
 }
 
 .navbar-menu {
@@ -62,12 +62,12 @@
 }
 
 .navbar-login-prompt {
-  color: #ccc;
+  color: #bdbec0;
   font-size: 1rem;
 }
 
 .navbar-button {
-  background-color: #4CAF50;
+  background-color: #bb2822;
   color: white;
   border: none;
   padding: 0.5rem 1.5rem;
@@ -78,15 +78,15 @@
 }
 
 .navbar-button:hover {
-  background-color: #45a049;
+  background-color: #bb2822;
 }
 
 .logout-btn {
-  background-color: #f44336;
+  background-color: #bb2822;
 }
 
 .logout-btn:hover {
-  background-color: #da190b;
+  background-color: #bb2822;
 }
 
 @media (max-width: 768px) {

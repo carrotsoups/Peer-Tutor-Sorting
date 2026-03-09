@@ -24,7 +24,7 @@ export function Schedule(){
             <div style={{ padding: '2rem', textAlign: 'center' }}>
                 <h2>Peer Tutor Scheduling</h2>
                 <p>No data available. Please upload a sheet first.</p>
-                <a href="/home" style={{ color: '#007bff', textDecoration: 'none' }}>
+                <a href="/home" style={{ color: '#bb2822', textDecoration: 'none' }}>
                     ← Back to Home
                 </a>
             </div>
@@ -41,7 +41,7 @@ export function Schedule(){
             )}
 
             <div style={{ marginBottom: '2rem' }}>
-                <a href="/home" style={{ color: '#007bff', textDecoration: 'none' }}>
+                <a href="/home" style={{ color: '#bb2822', textDecoration: 'none' }}>
                     ← Back to Data View
                 </a>
             </div>
