@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import GoogleDrivePicker from '../components/GoogleDrivePicker';
@@ -9,6 +9,7 @@ export function Home(){
     const { user } = useAuth();
     const { rows, setRows } = useSheet();
     const navigate = useNavigate();
+
     const [sortColumn, setSortColumn] = useState(0);
     const [filterTerm, setFilterTerm] = useState('');
     const [filterColumn, setFilterColumn] = useState(0);
@@ -17,6 +18,14 @@ export function Home(){
     const [manualOpen, setManualOpen] = useState(false);
     const [manualText, setManualText] = useState('');
     const [previewRows, setPreviewRows] = useState([]);
+
+    // Redirect to landing if not logged in
+    useEffect(() => {
+        if (!user) {
+            console.warn("No user logged in, redirecting to landing page.");
+            navigate("/");
+        }
+    }, [user, navigate]);
 
     const handlePreview = () => {
       const parsed = parseSpreadsheetText(manualText);
