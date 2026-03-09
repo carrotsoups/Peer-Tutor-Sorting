@@ -1,6 +1,5 @@
 .scheduling-container {
   display: flex;
-  height: 100vh;
   padding: 20px;
   gap: 15px;
   background-color: #bdbec0;
@@ -61,7 +60,7 @@
 
 .person-grade {
   font-size: 10px;
-  color: #bdbec0;
+  color: #7c7c7d;
 }
 
 .schedule-grid {
@@ -81,7 +80,7 @@
 .grid-header {
   display: grid;
   grid-template-columns: 120px repeat(5, 1fr);
-  background: #bdbec0;
+  background: #494949;
   border-bottom: 2px solid #bdbec0;
   position: sticky;
   top: 0;
@@ -93,7 +92,7 @@
   padding: 12px 8px;
   text-align: center;
   font-weight: bold;
-  color: black;
+  color: rgb(255, 255, 255);
   border-right: 1px solid #bdbec0;
   font-size: clamp(12px, 2vw, 16px);
   min-width: 0;
@@ -110,19 +109,19 @@
 .grid-row {
   display: grid;
   grid-template-columns: 120px repeat(5, 1fr);
-  border-bottom: 1px solid #bdbec0;
+  border-bottom: 1px solid #000000;
   flex: 1;
   min-height: 0;
 }
 
 .time-label {
   padding: 12px 8px;
-  background: #bdbec0;
+  background: #494949;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  color: black;
+  color: rgb(255, 255, 255);
   border-right: 2px solid #bdbec0;
   font-size: clamp(12px, 2vw, 16px);
   min-width: 0;

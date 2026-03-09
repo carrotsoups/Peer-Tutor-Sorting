@@ -32,7 +32,7 @@ export function Schedule(){
     }
 
     return (
-        <div style={{ padding: '2rem' }}>
+        <div>
             <h2>Peer Tutor Scheduling</h2>
             {user && (
                 <div style={{ marginBottom: '1rem' }}>
