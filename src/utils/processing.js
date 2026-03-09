@@ -177,3 +177,18 @@ export const filterRows = (rows, columnIndex, searchTerm) => {
     return cellValue.toLowerCase().includes(searchTerm.toLowerCase());
   });
 };
+
+/**
+ * Parse a block of plain text (CSV or tab-delimited) into a row array
+ * @param {string} text - pasted spreadsheet data
+ * @returns {Array<Array<string>>}
+ */
+export const parseSpreadsheetText = (text) => {
+  return text
+    .split(/\r?\n/)
+    .filter((line) => line.trim() !== "")
+    .map((line) => {
+      const delimiter = line.includes("\t") ? "\t" : ",";
+      return line.split(delimiter).map((cell) => cell.trim());
+    });
+};

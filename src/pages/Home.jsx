@@ -1,15 +1,32 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../components/AuthContext';
 import GoogleDrivePicker from '../components/GoogleDrivePicker';
 import { useSheet } from '../context/SheetContext';
-import { sortRows, filterRows } from '../utils/processing';
+import { sortRows, filterRows, parseSpreadsheetText } from '../utils/processing';
 
 export function Home(){
     const { user } = useAuth();
-    const { rows } = useSheet();
+    const { rows, setRows } = useSheet();
+    const navigate = useNavigate();
     const [sortColumn, setSortColumn] = useState(0);
     const [filterTerm, setFilterTerm] = useState('');
     const [filterColumn, setFilterColumn] = useState(0);
+
+    // manual paste states
+    const [manualOpen, setManualOpen] = useState(false);
+    const [manualText, setManualText] = useState('');
+    const [previewRows, setPreviewRows] = useState([]);
+
+    const handlePreview = () => {
+      const parsed = parseSpreadsheetText(manualText);
+      setPreviewRows(parsed);
+    };
+    const handleConfirm = () => {
+      if (previewRows.length === 0) return;
+      setRows(previewRows);
+      navigate('/schedule');
+    };
 
     
 
@@ -30,7 +47,51 @@ export function Home(){
                 </div>
             )}
             <GoogleDrivePicker />
-            
+            <div style={{ margin: '1.5rem 0', textAlign: 'center' }}>
+              <p>— OR —</p>
+              <button onClick={() => {
+                  setManualOpen(!manualOpen);
+                  setManualText('');
+                  setPreviewRows([]);
+                }}
+                style={{ padding: '0.5rem 1rem' }}
+              >
+                {manualOpen ? 'Close manual input' : 'Paste spreadsheet manually'}
+              </button>
+            </div>
+            {manualOpen && (
+              <div style={{ marginTop: '1rem', textAlign: 'left' }}>
+                <p>Copy &amp; paste spreadsheet rows (tabs/comma separated)</p>
+                <textarea
+                  rows={8}
+                  cols={80}
+                  value={manualText}
+                  onChange={(e) => setManualText(e.target.value)}
+                />
+                <div style={{ marginTop: '0.5rem' }}>
+                  <button onClick={handlePreview}>Preview</button>
+                  <button onClick={() => setManualOpen(false)} style={{ marginLeft: '1rem' }}>
+                    Cancel
+                  </button>
+                </div>
+                {previewRows.length > 0 && (
+                  <div style={{ marginTop: '1rem' }}>
+                    <h4>Preview</h4>
+                    <table border="1" cellPadding="5">
+                      <tbody>
+                        {previewRows.map((row,i)=>(
+                          <tr key={i}>{row.map((c,j)=><td key={j}>{c}</td>)}</tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <button onClick={handleConfirm} style={{ marginTop: '1rem' }}>
+                      Confirm and go to scheduling
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             {rows.length > 0 && (
                 <div style={{ marginTop: '2rem' }}>
                     <h3>Sheet Data</h3>
