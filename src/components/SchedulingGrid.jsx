@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { useSheet } from '../context/SheetContext';
 import { parseTutorsAndStudents, createPairing, canSchedulePairing } from '../utils/processing';
 import { autoScheduleTutorStudentPairs } from '../utils/autoScheduler';
+import ExportScheduleModal from './ExportScheduleModal';
+import ImportScheduleModal from './ImportScheduleModal';
 import './SchedulingGrid.css';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
@@ -18,6 +20,8 @@ const SchedulingGrid = () => {
   const [pendingStudent, setPendingStudent] = useState(null);
   const [pairings, setPairings] = useState([]);
   const [isPairingAreaCollapsed, setIsPairingAreaCollapsed] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
   // Parse data when rows change
   useEffect(() => {
@@ -164,28 +168,59 @@ const SchedulingGrid = () => {
     }
   };
 
+  const handleImportPairings = (newSchedule) => {
+    setSchedule(newSchedule);
+    alert('Pairings imported successfully!');
+  };
+
+  const handleClearAllPairings = () => {
+    if (window.confirm('Are you sure you want to clear ALL pairings from the board? This cannot be undone.')) {
+      // Clear all pairings from the schedule
+      const clearedSchedule = {};
+      DAYS.forEach(day => {
+        TIMES.forEach(time => {
+          clearedSchedule[`${day.toLowerCase()}-${time.toLowerCase()}`] = [];
+        });
+      });
+      setSchedule(clearedSchedule);
+      setPairings([]);
+      setPendingTutor(null);
+      setPendingStudent(null);
+      alert('All pairings have been cleared!');
+    }
+  };
+
   return (
     <div className="scheduling-container">
-      {/* Tutors Sidebar */}
-      <div className="sidebar tutors-sidebar">
-        <h3>Tutors</h3>
-        <div className="person-list">
-          {tutors.map(tutor => (
-            <div
-              key={tutor.id}
-              className="person-card tutor-card"
-              draggable
-              onDragStart={(e) => handleDragStart(e, tutor, 'tutor')}
-            >
-              <div className="person-name">{tutor.fullName}</div>
-              <div className="person-grade">{tutor.grade}</div>
-            </div>
-          ))}
-        </div>
+      {/* Top Action Bar */}
+      <div className="scheduling-header">
+        <button className="clear-all-btn" onClick={handleClearAllPairings}>
+          Clear All Pairings
+        </button>
       </div>
 
-      {/* Main Grid */}
-      <div className="schedule-grid">
+      {/* Main Content Area */}
+      <div className="scheduling-content">
+        {/* Tutors Sidebar */}
+        <div className="sidebar tutors-sidebar">
+          <h3>Tutors</h3>
+          <div className="person-list">
+            {tutors.map(tutor => (
+              <div
+                key={tutor.id}
+                className="person-card tutor-card"
+                draggable
+                onDragStart={(e) => handleDragStart(e, tutor, 'tutor')}
+              >
+                <div className="person-name">{tutor.fullName}</div>
+                <div className="person-grade">{tutor.grade}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Main Grid */}
+        <div className="schedule-grid">
         {/* Header Row */}
         <div className="grid-header">
           <div className="time-label"></div>
@@ -250,6 +285,7 @@ const SchedulingGrid = () => {
           ))}
         </div>
       </div>
+      </div>
 
       {/* Pairing Area */}
       <div className="pairing-area">
@@ -265,9 +301,17 @@ const SchedulingGrid = () => {
         </div>
         {!isPairingAreaCollapsed && (
           <>
-            <button className="auto-schedule-btn" onClick={handleAutoSchedule}>
-              Auto Schedule
-            </button>
+            <div className="button-row">
+              <button className="auto-schedule-btn" onClick={handleAutoSchedule}>
+                Auto Schedule
+              </button>
+              <button className="export-btn" onClick={() => setIsExportModalOpen(true)}>
+                Export Schedule
+              </button>
+              <button className="import-btn" onClick={() => setIsImportModalOpen(true)}>
+                Import Schedule
+              </button>
+            </div>
             <div
               className="pairing-zone"
               onDragOver={(e) => e.preventDefault()}
@@ -322,6 +366,23 @@ const SchedulingGrid = () => {
           </>
         )}
       </div>
+
+      {/* Modals */}
+      <ExportScheduleModal 
+        schedule={schedule}
+        tutors={tutors}
+        students={students}
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+      />
+      <ImportScheduleModal
+        schedule={schedule}
+        tutors={tutors}
+        students={students}
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onImport={handleImportPairings}
+      />
     </div>
   );
 };

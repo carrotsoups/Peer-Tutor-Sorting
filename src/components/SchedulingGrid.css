@@ -1,9 +1,48 @@
 .scheduling-container {
   display: flex;
+  flex-direction: column;
   padding: 20px;
   gap: 15px;
   background-color: #bdbec0;
   box-sizing: border-box;
+}
+
+.scheduling-header {
+  display: flex;
+  gap: 10px;
+  background: #f0f0f0;
+  padding: 12px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.clear-all-btn {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #dc3545, #c82333);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-all-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.clear-all-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.2);
+}
+
+.scheduling-content {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+  min-height: 0;
 }
 
 .sidebar {
@@ -257,18 +296,30 @@
   color: #007bff;
 }
 
-.auto-schedule-btn {
-  width: 100%;
+.button-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.auto-schedule-btn,
+.export-btn,
+.import-btn {
+  flex: 1;
+  min-width: 100px;
   padding: 8px 12px;
-  background: linear-gradient(135deg, #007bff, #0056b3);
-  color: white;
   border: none;
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-bottom: 12px;
+}
+
+.auto-schedule-btn {
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  color: white;
 }
 
 .auto-schedule-btn:hover {
@@ -279,6 +330,36 @@
 .auto-schedule-btn:active {
   transform: translateY(0);
   box-shadow: 0 2px 6px rgba(0, 86, 179, 0.2);
+}
+
+.export-btn {
+  background: linear-gradient(135deg, #28a745, #1e7e34);
+  color: white;
+}
+
+.export-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+
+.export-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(40, 167, 69, 0.2);
+}
+
+.import-btn {
+  background: linear-gradient(135deg, #ffc107, #e0a800);
+  color: #333;
+}
+
+.import-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+.import-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(255, 193, 7, 0.2);
 }
 
 .pairing-zone {
