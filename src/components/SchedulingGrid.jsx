@@ -48,8 +48,8 @@ const SchedulingGrid = () => {
     setSchedule(initialSchedule);
   }, []);
 
-  const handleDragStart = (e, item, type) => {
-    setDraggedItem({ item, type });
+  const handleDragStart = (e, item, type, extraData = {}) => {
+    setDraggedItem({ item, type, ...extraData });
     e.dataTransfer.effectAllowed = 'move';
   };
 
@@ -74,7 +74,18 @@ const SchedulingGrid = () => {
 
     if (draggedItem?.type === 'pairing') {
       const cellKey = `${day.toLowerCase()}-${time.toLowerCase()}`;
-      const canDrop = canSchedulePairing(draggedItem.item, day, time, schedule, cellKey);
+      
+      // For moving existing pairings, temporarily exclude the dragged pairing from conflict checks
+      let tempSchedule = schedule;
+      if (draggedItem.fromDay && draggedItem.fromTime) {
+        const fromCellKey = `${draggedItem.fromDay.toLowerCase()}-${draggedItem.fromTime.toLowerCase()}`;
+        tempSchedule = {
+          ...schedule,
+          [fromCellKey]: schedule[fromCellKey].filter(p => p.id !== draggedItem.item.id)
+        };
+      }
+      
+      const canDrop = canSchedulePairing(draggedItem.item, day, time, tempSchedule, cellKey);
       e.dataTransfer.dropEffect = canDrop ? 'move' : 'none';
     }
   };
@@ -87,24 +98,54 @@ const SchedulingGrid = () => {
     e.preventDefault();
     setHoveredCell(null);
 
-    if (!draggedItem || draggedItem.type !== 'pairing') {
+    if (!draggedItem) {
       setDraggedItem(null);
       return;
     }
 
     const cellKey = `${day.toLowerCase()}-${time.toLowerCase()}`;
-    const canDrop = canSchedulePairing(draggedItem.item, day, time, schedule, cellKey);
 
-    if (canDrop) {
-      // Add the pairing to the schedule
-      setSchedule(prev => ({
-        ...prev,
-        [cellKey]: [...prev[cellKey], draggedItem.item]
-      }));
-      // Remove the pairing from the available pairings list
-      setPairings(prev => prev.filter(p => p.id !== draggedItem.item.id));
+    if (draggedItem.type === 'pairing') {
+      // For moving existing pairings, temporarily exclude the dragged pairing from conflict checks
+      let tempSchedule = schedule;
+      if (draggedItem.fromDay && draggedItem.fromTime) {
+        const fromCellKey = `${draggedItem.fromDay.toLowerCase()}-${draggedItem.fromTime.toLowerCase()}`;
+        tempSchedule = {
+          ...schedule,
+          [fromCellKey]: schedule[fromCellKey].filter(p => p.id !== draggedItem.item.id)
+        };
+      }
+      
+      const canDrop = canSchedulePairing(draggedItem.item, day, time, tempSchedule, cellKey);
+
+      if (canDrop) {
+        // Check if this is moving an existing pairing
+        if (draggedItem.fromDay && draggedItem.fromTime) {
+          const fromCellKey = `${draggedItem.fromDay.toLowerCase()}-${draggedItem.fromTime.toLowerCase()}`;
+          
+          // Don't do anything if dropping in the same cell
+          if (fromCellKey === cellKey) {
+            setDraggedItem(null);
+            return;
+          }
+
+          // Remove from old cell and add to new cell
+          setSchedule(prev => ({
+            ...prev,
+            [fromCellKey]: prev[fromCellKey].filter(p => p.id !== draggedItem.item.id),
+            [cellKey]: [...prev[cellKey], draggedItem.item]
+          }));
+        } else {
+          // This is a new pairing from the sidebar
+          setSchedule(prev => ({
+            ...prev,
+            [cellKey]: [...prev[cellKey], draggedItem.item]
+          }));
+          // Remove the pairing from the available pairings list
+          setPairings(prev => prev.filter(p => p.id !== draggedItem.item.id));
+        }
+      }
     }
-    // If cannot drop, the pairing stays in the available list
 
     setDraggedItem(null);
   };
@@ -319,6 +360,8 @@ const SchedulingGrid = () => {
                     <div
                       key={pairing.id}
                       className={`pairing-card${pairing.autoScheduled ? ' auto-scheduled' : ''}`}
+                      draggable
+                      onDragStart={(e) => handleDragStart(e, pairing, 'pairing', { fromDay: day, fromTime: time })}
                       onClick={() => removePairing(day, time, pairing.id)}
                     >
                       <div className="tutor-info">
