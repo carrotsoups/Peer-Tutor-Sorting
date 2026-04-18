@@ -73,14 +73,12 @@ const findBestTimeSlot = (tutor, student, schedule) => {
 
 /**
  * Auto-schedules tutors with students based on constraints
- * Frozen pairs (already in schedule) are not changed
  * 
  * Rules:
- * - Tutor must be older than student (unless student is grade 12, then must be grade 12)
- * - Each student gets exactly 1 slot
- * - Minimize number of students per tutor
- * - Prefer lunch times
- * - Maximize total pairings (all students paired unless impossible)
+ * - Each tutor gets exactly 1 student, each student gets exactly 1 tutor
+ * - Tutor grade must be at least 1 greater than student grade
+ * - Prefer lunch times when scheduling
+ * - Maximize total number of pairs that fit the above constraints
  * 
  * @param {Array} tutors - List of tutor objects
  * @param {Array} students - List of student objects
@@ -88,31 +86,91 @@ const findBestTimeSlot = (tutor, student, schedule) => {
  * @returns {Object} { schedule: updated schedule, unpairedStudents: array of unpaired students }
  */
 export const autoScheduleTutorStudentPairs = (tutors, students, schedule) => {
-  // Identify frozen pairs and students (students can only have 1 pairing)
+  // Identify frozen pairs (already scheduled)
   const frozenStudentIds = new Set();
+  const frozenTutorIds = new Set();
   
-  // Initialize tutor workload tracking
-  const tutorStudentCount = {};
-  tutors.forEach(tutor => {
-    tutorStudentCount[tutor.id] = 0;
-  });
-  
-  // Count frozen assignments and mark frozen students
   Object.values(schedule).forEach(pairings => {
     pairings.forEach(pairing => {
       frozenStudentIds.add(pairing.student.id);
-      tutorStudentCount[pairing.tutor.id]++;
+      frozenTutorIds.add(pairing.tutor.id);
     });
   });
   
-  // Get available students (students not yet scheduled)
-  // Tutors can have multiple pairings, so we don't exclude them
+  // Get available tutors and students (not yet scheduled)
+  const availableTutors = tutors.filter(t => !frozenTutorIds.has(t.id));
   const availableStudents = students.filter(s => !frozenStudentIds.has(s.id));
   
-  // Create new schedule (deep copy to avoid mutating original)
+  // Build compatibility matrix: which tutors can tutor which students
+  const compatibility = {};
+  availableStudents.forEach(student => {
+    compatibility[student.id] = [];
+    
+    availableTutors.forEach(tutor => {
+      // Check grade constraint: tutor must be at least 1 grade higher
+      const tutorGrade = gradeToNumber(tutor.grade);
+      const studentGrade = gradeToNumber(student.grade);
+      
+      if (tutorGrade > studentGrade) {
+        compatibility[student.id].push(tutor);
+      }
+    });
+  });
+  
+  // Find the best matching using improved greedy approach
+  // Sort students by compatibility (most constrained first)
+  const sortedStudents = [...availableStudents].sort((a, b) => {
+    const aOptions = compatibility[a.id].length;
+    const bOptions = compatibility[b.id].length;
+    // Sort by fewer options first (most constrained students get priority)
+    return aOptions - bOptions;
+  });
+  
+  const pairedTutorIds = new Set();
+  const pairings = [];
+  
+  // For each student (sorted by constraint level), find the best available tutor
+  for (const student of sortedStudents) {
+    const validTutors = compatibility[student.id].filter(
+      t => !pairedTutorIds.has(t.id)
+    );
+    
+    if (validTutors.length > 0) {
+      // Sort tutors by availability compatibility with student (most common slots first)
+      const tutorsWithAvailabilityScore = validTutors.map(tutor => {
+        let commonSlots = 0;
+        let lunchSlots = 0;
+        DAYS.forEach(day => {
+          TIMES.forEach(time => {
+            if (isPersonAvailable(tutor, day, time, true) && isPersonAvailable(student, day, time, false)) {
+              commonSlots++;
+              if (time === 'Lunch') lunchSlots++;
+            }
+          });
+        });
+        return { tutor, commonSlots, lunchSlots };
+      });
+      
+      tutorsWithAvailabilityScore.sort((a, b) => {
+        // Prefer more lunch slots, then more total common slots
+        if (a.lunchSlots !== b.lunchSlots) return b.lunchSlots - a.lunchSlots;
+        return b.commonSlots - a.commonSlots;
+      });
+      
+      const selectedTutor = tutorsWithAvailabilityScore[0].tutor;
+      pairings.push({ tutor: selectedTutor, student });
+      pairedTutorIds.add(selectedTutor.id);
+    }
+  }
+  
+  // Identify unpaired students
+  const pairedStudentIds = new Set(pairings.map(p => p.student.id));
+  const unpairedStudents = availableStudents.filter(s => !pairedStudentIds.has(s.id));
+  
+  // Now schedule the pairings into the calendar
   const newSchedule = {};
   
-  // Initialize all cells
+  // Initialize all cells with existing pairings
   DAYS.forEach(day => {
     TIMES.forEach(time => {
       const cellKey = `${day.toLowerCase()}-${time.toLowerCase()}`;
@@ -120,52 +178,17 @@ export const autoScheduleTutorStudentPairs = (tutors, students, schedule) => {
     });
   });
   
-  // Sort students by ID for consistent ordering
-  const sortedStudents = [...availableStudents].sort((a, b) => a.id - b.id);
+  console.log('Pairings to schedule:', pairings.map(p => `${p.tutor.fullName} → ${p.student.fullName}`));
   
-  // Track unpaired students
-  const unpairedStudents = [];
-  
-  // Schedule each student - maximize total pairings
-  sortedStudents.forEach(student => {
-    // Find tutors compatible with this student
-    const compatibleTutors = tutors.filter(tutor => {
-      if (student.grade === 'Grade 12') {
-        // Grade 12 students need grade 12 tutors
-        return tutor.grade === 'Grade 12';
-      } else {
-        // Other students need older (higher grade) tutors
-        return gradeToNumber(tutor.grade) > gradeToNumber(student.grade);
-      }
-    });
+  // Schedule each pairing, preferring lunch
+  pairings.forEach(({ tutor, student }) => {
+    const slot = findBestTimeSlot(tutor, student, newSchedule);
     
-    if (compatibleTutors.length === 0) {
-      unpairedStudents.push(student);
-      return; // No compatible tutor
-    }
-    
-    // Sort compatible tutors by workload (ascending) to balance while maximizing pairings
-    const sortedTutors = [...compatibleTutors].sort((a, b) => {
-      return tutorStudentCount[a.id] - tutorStudentCount[b.id];
-    });
-    
-    // Try each tutor until we find one that can be scheduled
-    let paired = false;
-    for (const tutor of sortedTutors) {
-      const bestSlot = findBestTimeSlot(tutor, student, newSchedule);
-      
-      if (bestSlot) {
-        // Create and place the pairing with autoScheduled flag
-        const newPairing = createPairing(tutor, student);
-        newPairing.autoScheduled = true;
-        newSchedule[bestSlot] = [...(newSchedule[bestSlot] || []), newPairing];
-        tutorStudentCount[tutor.id]++;
-        paired = true;
-        break; // Student is paired, move to next student
-      }
-    }
-    
-    if (!paired) {
+    if (slot) {
+      const newPairing = createPairing(tutor, student);
+      newPairing.autoScheduled = true;
+      newSchedule[slot].push(newPairing);
+    } else {
       unpairedStudents.push(student);
     }
   });
