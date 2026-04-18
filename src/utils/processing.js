@@ -15,7 +15,7 @@ export const parseTutorsAndStudents = (rows) => {
   const dataRows = rows[0] && rows[0][0] === 'Timestamp' ? rows.slice(1) : rows;
 
   dataRows.forEach((row, index) => {
-    if (row.length < 8) return; // Skip incomplete rows
+    if (row.length < 9) return; // Skip incomplete rows - need up to notes column (which contains email)
 
     const person = {
       id: index,
@@ -25,7 +25,8 @@ export const parseTutorsAndStudents = (rows) => {
       fullName: `${row[1] || ''} ${row[2] || ''}`.trim(),
       role: row[4] || '',
       availability: parseTimeSpecificAvailability(row[5] || '', row[6] || '', row[7] || ''),
-      notes: row[8] || ''
+      email: row[8] || '', // Email is stored in the notes column
+      notes: '' // Notes field is now empty since it contains email
     };
 
     // Determine if they're a tutor or student based on their response

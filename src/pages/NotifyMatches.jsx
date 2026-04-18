@@ -1,21 +1,21 @@
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSheet } from '../context/SheetContext';
-import { parseTutorsAndStudents } from '../utils/processing';
+import emailjs from '@emailjs/browser';
 import '../css/NotifyMatches.css';
 
 export function NotifyMatches() {
-  const navigate = useNavigate();
   const { rows } = useSheet();
   const [selectedMatches, setSelectedMatches] = useState(new Set());
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
 
+  // Initialize EmailJS
+  useMemo(() => {
+    emailjs.init('JuY-9WqtbhBfsYSAf');
+  }, []);
+
   // Extract all scheduled matches from the data
   const allMatches = useMemo(() => {
     if (rows.length === 0) return [];
-    
-    const { tutors, students } = parseTutorsAndStudents(rows);
-    const matches = [];
     
     // Since we don't have direct access to schedule from here,
     // we'll need to use localStorage or pass schedule through context
@@ -28,6 +28,8 @@ export function NotifyMatches() {
         const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
         const TIMES = ['Morning', 'Lunch', 'Afterschool'];
         
+        const matches = [];
+        
         DAYS.forEach(day => {
           TIMES.forEach(time => {
             const cellKey = `${day.toLowerCase()}-${time.toLowerCase()}`;
@@ -37,19 +39,25 @@ export function NotifyMatches() {
               matches.push({
                 id: pairing.id,
                 tutorName: pairing.tutor.fullName,
+                tutorGrade: pairing.tutor.grade,
+                tutorEmail: pairing.tutor.email,
                 studentName: pairing.student.fullName,
+                studentGrade: pairing.student.grade,
+                studentEmail: pairing.student.email,
                 day,
                 time
               });
             });
           });
         });
+        
+        return matches;
       } catch (e) {
         console.error('Error parsing schedule data:', e);
       }
     }
     
-    return matches;
+    return [];
   }, [rows]);
 
   const toggleSelectMatch = (matchId) => {
@@ -78,18 +86,54 @@ export function NotifyMatches() {
     setShowEmailConfirmation(true);
   };
 
-  const handleEmailConfirm = () => {
+  const handleEmailConfirm = async () => {
     // Get selected matches data
     const matchesToEmail = allMatches.filter(m => selectedMatches.has(m.id));
     
-    // Log to console
-    console.log('emailed');
-    
-    // Optional: You can also log the selected matches
-    console.log('Matches emailed:', matchesToEmail);
-    
-    // Show success message
-    alert(`Successfully emailed ${matchesToEmail.length} match(es)!`);
+    if (matchesToEmail.length === 0) {
+      alert('No matches selected.');
+      return;
+    }
+    console.log('Selected matches to email:', matchesToEmail);
+    console.log('Number of matches:', matchesToEmail.length);
+    // Check if any matches are missing email data
+    const matchesWithoutEmails = matchesToEmail.filter(match => 
+      !match.tutorEmail || !match.studentEmail || 
+      match.tutorEmail.trim() === '' || match.studentEmail.trim() === ''
+    );
+
+    if (matchesWithoutEmails.length > 0) {
+      alert(`Cannot send emails: ${matchesWithoutEmails.length} match(es) are missing email addresses. Please ensure your Google Sheet includes email addresses in the notes column and reload the schedule.`);
+      return;
+    }
+
+    try {
+      // Send email for each match
+      for (const match of matchesToEmail) {
+        console.log('Processing match:', match);
+        console.log('Tutor email:', match.tutorEmail, 'Type:', typeof match.tutorEmail);
+        console.log('Student email:', match.studentEmail, 'Type:', typeof match.studentEmail);
+        console.log('Tutor name:', match.tutorName, 'Type:', typeof match.tutorName);
+        console.log('Student name:', match.studentName, 'Type:', typeof match.studentName);
+        
+        const templateParams = {
+          emailtutor: match.tutorEmail,
+          emailstudent: match.studentEmail,
+          tutorname: match.tutorName,
+          tutorgrade: match.tutorGrade,
+          studentname: match.studentName,
+          studentgrade: match.studentGrade,
+          time: `${match.day} ${match.time}`
+        };
+
+        await emailjs.send('default_service', 'template_i4iie1c', templateParams);
+      }
+
+      alert(`Successfully emailed ${matchesToEmail.length} match(es)!`);
+    } catch (error) {
+      console.error('Email sending failed:', error);
+      alert(`Failed to send emails: ${error.text || error.message || 'Unknown error'}`);
+    }
     
     // Close confirmation modal
     setShowEmailConfirmation(false);
