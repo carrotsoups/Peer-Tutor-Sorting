@@ -76,6 +76,10 @@
   font-size: 14px;
   color: #0056b3;
 }
+.export-description {
+  font-size: 14px;
+  color: #2c2c2c;
+}
 
 .export-info p {
   margin: 0;

@@ -10,7 +10,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const TIMES = ['Morning', 'Lunch', 'Afterschool'];
 
 const SchedulingGrid = () => {
-  const { rows } = useSheet();
+  const { rows, setRows } = useSheet();
   const [tutors, setTutors] = useState([]);
   const [students, setStudents] = useState([]);
   const [schedule, setSchedule] = useState({});
@@ -190,6 +190,52 @@ const SchedulingGrid = () => {
     }
   };
 
+  const handleDeleteTutor = (tutor) => {
+    if (window.confirm(`Are you sure you want to delete "${tutor.fullName}"? This will remove them from the system.`)) {
+      // Remove the row that matches this tutor
+      const newRows = rows.filter(row => 
+        !(row[1] === tutor.firstName && row[2] === tutor.lastName && row[3] === tutor.grade)
+      );
+      setRows(newRows);
+      // Also remove any pairings with this tutor from the current schedule
+      const newSchedule = {};
+      DAYS.forEach(day => {
+        TIMES.forEach(time => {
+          const cellKey = `${day.toLowerCase()}-${time.toLowerCase()}`;
+          newSchedule[cellKey] = (schedule[cellKey] || []).filter(p => 
+            !(p.tutor.firstName === tutor.firstName && p.tutor.lastName === tutor.lastName && p.tutor.grade === tutor.grade)
+          );
+        });
+      });
+      setSchedule(newSchedule);
+      setPendingTutor(null);
+      setPairings([]);
+    }
+  };
+
+  const handleDeleteStudent = (student) => {
+    if (window.confirm(`Are you sure you want to delete "${student.fullName}"? This will remove them from the system.`)) {
+      // Remove the row that matches this student
+      const newRows = rows.filter(row => 
+        !(row[1] === student.firstName && row[2] === student.lastName && row[3] === student.grade)
+      );
+      setRows(newRows);
+      // Also remove any pairings with this student from the current schedule
+      const newSchedule = {};
+      DAYS.forEach(day => {
+        TIMES.forEach(time => {
+          const cellKey = `${day.toLowerCase()}-${time.toLowerCase()}`;
+          newSchedule[cellKey] = (schedule[cellKey] || []).filter(p => 
+            !(p.student.firstName === student.firstName && p.student.lastName === student.lastName && p.student.grade === student.grade)
+          );
+        });
+      });
+      setSchedule(newSchedule);
+      setPendingStudent(null);
+      setPairings([]);
+    }
+  };
+
   return (
     <div className="scheduling-container">
       {/* Top Action Bar */}
@@ -212,8 +258,17 @@ const SchedulingGrid = () => {
                 draggable
                 onDragStart={(e) => handleDragStart(e, tutor, 'tutor')}
               >
-                <div className="person-name">{tutor.fullName}</div>
-                <div className="person-grade">{tutor.grade}</div>
+                <div className="person-info">
+                  <div className="person-name">{tutor.fullName}</div>
+                  <div className="person-grade">{tutor.grade}</div>
+                </div>
+                <button 
+                  className="delete-btn"
+                  onClick={() => handleDeleteTutor(tutor)}
+                  title="Delete tutor"
+                >
+                  ✕
+                </button>
               </div>
             ))}
           </div>
@@ -279,8 +334,17 @@ const SchedulingGrid = () => {
               draggable
               onDragStart={(e) => handleDragStart(e, student, 'student')}
             >
-              <div className="person-name">{student.fullName}</div>
-              <div className="person-grade">{student.grade}</div>
+              <div className="person-info">
+                <div className="person-name">{student.fullName}</div>
+                <div className="person-grade">{student.grade}</div>
+              </div>
+              <button 
+                className="delete-btn"
+                onClick={() => handleDeleteStudent(student)}
+                title="Delete student"
+              >
+                ✕
+              </button>
             </div>
           ))}
         </div>

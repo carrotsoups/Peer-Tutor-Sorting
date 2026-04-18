@@ -56,7 +56,9 @@ const ExportScheduleModal = ({ schedule, tutors = [], students = [], isOpen, onC
           <h2>Export Pairings</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
-
+        <p className="export-description">
+          Copy this and save it for later to import or share with others.
+        </p>
         <div className="modal-body">
           <div className="export-info">
             <p>Scheduled Pairings: <strong>{pairingCount}</strong></p>
