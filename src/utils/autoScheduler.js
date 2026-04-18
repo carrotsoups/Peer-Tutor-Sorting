@@ -86,18 +86,33 @@ const findBestTimeSlot = (tutor, student, schedule) => {
  * @returns {Object} { schedule: updated schedule, unpairedStudents: array of unpaired students }
  */
 export const autoScheduleTutorStudentPairs = (tutors, students, schedule) => {
-  // Identify frozen pairs (already scheduled)
+  // First, clear all auto-scheduled pairings and identify manual (frozen) pairs
+  const clearedSchedule = {};
   const frozenStudentIds = new Set();
   const frozenTutorIds = new Set();
   
-  Object.values(schedule).forEach(pairings => {
-    pairings.forEach(pairing => {
-      frozenStudentIds.add(pairing.student.id);
-      frozenTutorIds.add(pairing.tutor.id);
+  // Initialize cleared schedule with same structure
+  DAYS.forEach(day => {
+    TIMES.forEach(time => {
+      clearedSchedule[`${day.toLowerCase()}-${time.toLowerCase()}`] = [];
     });
   });
   
-  // Get available tutors and students (not yet scheduled)
+  // Separate manual pairings (keep them) from auto-scheduled (remove them)
+  Object.entries(schedule).forEach(([cellKey, pairings]) => {
+    pairings.forEach(pairing => {
+      if (pairing.autoScheduled) {
+        // Remove auto-scheduled pairings
+      } else {
+        // Keep manual pairings and mark people as frozen
+        clearedSchedule[cellKey].push(pairing);
+        frozenStudentIds.add(pairing.student.id);
+        frozenTutorIds.add(pairing.tutor.id);
+      }
+    });
+  });
+  
+  // Get available tutors and students (not frozen by manual pairings)
   const availableTutors = tutors.filter(t => !frozenTutorIds.has(t.id));
   const availableStudents = students.filter(s => !frozenStudentIds.has(s.id));
   
@@ -170,11 +185,11 @@ export const autoScheduleTutorStudentPairs = (tutors, students, schedule) => {
   // Now schedule the pairings into the calendar
   const newSchedule = {};
   
-  // Initialize all cells with existing pairings
+  // Initialize all cells with existing manual pairings (auto-scheduled ones were cleared)
   DAYS.forEach(day => {
     TIMES.forEach(time => {
       const cellKey = `${day.toLowerCase()}-${time.toLowerCase()}`;
-      newSchedule[cellKey] = [...(schedule[cellKey] || [])];
+      newSchedule[cellKey] = [...(clearedSchedule[cellKey] || [])];
     });
   });
   
