@@ -18,7 +18,7 @@
 
 .clear-all-btn {
   padding: 8px 16px;
-  background: linear-gradient(135deg, #dc3545, #c82333);
+  background: #dc3545;
   color: white;
   border: none;
   border-radius: 6px;
@@ -237,7 +237,7 @@
 }
 
 .pairing-card {
-  background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+  background: #fff3cd;
   border: 2px solid #ffc107;
   border-radius: 6px;
   padding: 8px;
@@ -254,7 +254,7 @@
 }
 
 .pairing-card.auto-scheduled {
-  background: linear-gradient(135deg, #c7e9c0, #a8e6b8);
+  background: #c7e9c0;
   border: 2px solid #28a745;
 }
 
@@ -387,7 +387,7 @@
 }
 
 .auto-schedule-btn {
-  background: linear-gradient(135deg, #007bff, #0056b3);
+  background: #007bff;
   color: white;
 }
 
@@ -402,7 +402,7 @@
 }
 
 .export-btn {
-  background: linear-gradient(135deg, #28a745, #1e7e34);
+  background: #28a745;
   color: white;
 }
 
@@ -417,7 +417,7 @@
 }
 
 .import-btn {
-  background: linear-gradient(135deg, #ffc107, #e0a800);
+  background: #ffc107;
   color: #333;
 }
 
@@ -500,7 +500,6 @@
 }
 
 .pairing-block {
-  background: linear-gradient(135deg, #28a745, #20c997);
   border-radius: 6px;
   padding: 8px;
   cursor: grab;
@@ -508,6 +507,7 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   border: 2px solid transparent;
   color: white;
+  background: #28a745;
 }
 
 .pairing-block:hover {

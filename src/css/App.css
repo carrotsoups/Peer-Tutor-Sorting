@@ -46,7 +46,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, white 0%, #bdbec0 100%);
+  background: #f5f5f5;
   padding: 2rem;
 }
 
