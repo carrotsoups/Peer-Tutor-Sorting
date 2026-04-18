@@ -53,6 +53,21 @@ const SchedulingGrid = () => {
     e.dataTransfer.effectAllowed = 'move';
   };
 
+  // Check if a person is already paired in the schedule
+  const isPersonPaired = (person, isTutor = true) => {
+    for (const pairings of Object.values(schedule)) {
+      for (const pairing of pairings) {
+        const scheduledPerson = isTutor ? pairing.tutor : pairing.student;
+        if (scheduledPerson.firstName === person.firstName && 
+            scheduledPerson.lastName === person.lastName && 
+            scheduledPerson.grade === person.grade) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
   const handleDragOver = (e, day, time) => {
     e.preventDefault();
     setHoveredCell(`${day}-${time}`);
@@ -254,7 +269,7 @@ const SchedulingGrid = () => {
             {tutors.map(tutor => (
               <div
                 key={tutor.id}
-                className="person-card tutor-card"
+                className={`person-card tutor-card ${isPersonPaired(tutor, true) ? 'paired' : ''}`}
                 draggable
                 onDragStart={(e) => handleDragStart(e, tutor, 'tutor')}
               >
@@ -330,7 +345,7 @@ const SchedulingGrid = () => {
           {students.map(student => (
             <div
               key={student.id}
-              className="person-card student-card"
+              className={`person-card student-card ${isPersonPaired(student, false) ? 'paired' : ''}`}
               draggable
               onDragStart={(e) => handleDragStart(e, student, 'student')}
             >
