@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useSheet } from '../context/SheetContext';
 import { parseTutorsAndStudents, createPairing, canSchedulePairing } from '../utils/processing';
 import { autoScheduleTutorStudentPairs } from '../utils/autoScheduler';
@@ -10,6 +11,7 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const TIMES = ['Morning', 'Lunch', 'Afterschool'];
 
 const SchedulingGrid = () => {
+  const navigate = useNavigate();
   const { rows, setRows } = useSheet();
   const [tutors, setTutors] = useState([]);
   const [students, setStudents] = useState([]);
@@ -324,6 +326,12 @@ const SchedulingGrid = () => {
       <div className="scheduling-header">
         <button className="clear-all-btn" onClick={handleClearAllPairings}>
           Clear All Pairings
+        </button>
+        <button 
+          className="notify-matches-btn" 
+          onClick={() => navigate('/notify-matches')}
+        >
+          Notify Matches
         </button>
       </div>
 
