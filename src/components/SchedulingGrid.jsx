@@ -49,6 +49,11 @@ const SchedulingGrid = () => {
     setSchedule(initialSchedule);
   }, []);
 
+  // Save schedule to sessionStorage whenever it changes
+  useEffect(() => {
+    sessionStorage.setItem('tutorSchedule', JSON.stringify(schedule));
+  }, [schedule]);
+
   const handleDragStart = (e, item, type, extraData = {}) => {
     setDraggedItem({ item, type, ...extraData });
     e.dataTransfer.effectAllowed = 'move';

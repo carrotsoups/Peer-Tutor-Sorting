@@ -1,0 +1,150 @@
+.select-all-btn {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.select-all-btn:hover {
+  background-color: #45a049;
+}
+
+.matches-list {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 500px;
+  overflow-y: auto;
+  background-color: #fafafa;
+}
+
+.match-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border-bottom: 1px solid #e0e0e0;
+  gap: 15px;
+  transition: background-color 0.2s;
+}
+
+.match-item:hover {
+  background-color: #f0f0f0;
+}
+
+.match-item:last-child {
+  border-bottom: none;
+}
+
+.match-checkbox {
+  margin-top: 5px;
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.match-details {
+  flex: 1;
+}
+
+.match-names {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.match-time {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.email-btn {
+  background-color: #bb2822;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.email-btn:hover {
+  background-color: #a01d18;
+}
+
+.email-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.email-confirmation-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.email-confirmation-content {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 90%;
+}
+
+.email-confirmation-content h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.email-confirmation-content p {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.email-confirmation-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-confirm {
+  background-color: #bb2822;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-confirm:hover {
+  background-color: #a01d18;
+}
+
+.btn-cancel {
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.btn-cancel:hover {
+  background-color: #d0d0d0;
+}
