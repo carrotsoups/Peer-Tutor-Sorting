@@ -219,13 +219,42 @@
   z-index: 1000;
   min-width: clamp(250px, 35vw, 380px);
   max-width: 90vw;
+  transition: all 0.3s ease;
+}
+
+.pairing-area-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
 }
 
 .pairing-area h3 {
-  margin: 0 0 12px 0;
+  margin: 0;
   font-size: 14px;
   color: #495057;
   text-align: center;
+  flex: 1;
+}
+
+.collapse-toggle {
+  background: none;
+  border: none;
+  color: #495057;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.collapse-toggle:hover {
+  color: #007bff;
 }
 
 .auto-schedule-btn {

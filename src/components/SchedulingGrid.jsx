@@ -17,6 +17,7 @@ const SchedulingGrid = () => {
   const [pendingTutor, setPendingTutor] = useState(null);
   const [pendingStudent, setPendingStudent] = useState(null);
   const [pairings, setPairings] = useState([]);
+  const [isPairingAreaCollapsed, setIsPairingAreaCollapsed] = useState(false);
 
   // Parse data when rows change
   useEffect(() => {
@@ -252,61 +253,74 @@ const SchedulingGrid = () => {
 
       {/* Pairing Area */}
       <div className="pairing-area">
-        <h3>Create Tutor-Student Pair</h3>
-        <button className="auto-schedule-btn" onClick={handleAutoSchedule}>
-          Auto Schedule
-        </button>
-        <div
-          className="pairing-zone"
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDropOnPairingZone}
-        >
-          <div className="pending-items">
-            {pendingTutor && (
-              <div className="pending-tutor">
-                <span>Tutor: {pendingTutor.fullName} ({pendingTutor.grade})</span>
-                <button onClick={() => setPendingTutor(null)}>×</button>
-              </div>
-            )}
-            {pendingStudent && (
-              <div className="pending-student">
-                <span>Student: {pendingStudent.fullName} ({pendingStudent.grade})</span>
-                <button onClick={() => setPendingStudent(null)}>×</button>
-              </div>
-            )}
-            {!pendingTutor && !pendingStudent && pairings.length === 0 && (
-              <span>Drop tutor and student here to create a pair</span>
-            )}
-            {((pendingTutor && !pendingStudent) || (!pendingTutor && pendingStudent)) && (
-              <span>Drop the other person to create pair</span>
-            )}
-          </div>
-
-          {/* Active Pairing Block */}
-          {pairings.length > 0 && (
-            <div className="active-pairing">
-              <div
-                className="pairing-block"
-                draggable
-                onDragStart={(e) => {
-                  setDraggedItem({ item: pairings[0], type: 'pairing' });
-                  e.dataTransfer.effectAllowed = 'move';
-                  e.dataTransfer.setData('text/plain', pairings[0].id);
-                }}
-                onClick={() => breakApartPairing(pairings[0].id)}
-                title="Drag to schedule or click to break apart"
-              >
-                <div className="pairing-tutor">
-                  <strong>{pairings[0].tutor.fullName}</strong> ({pairings[0].tutor.grade})
-                </div>
-                <div className="pairing-student">
-                  <strong>{pairings[0].student.fullName}</strong> ({pairings[0].student.grade})
-                </div>
-                <div className="pairing-instruction">Drag to schedule • Click to break apart</div>
-              </div>
-            </div>
-          )}
+        <div className="pairing-area-header">
+          <h3>Create Tutor-Student Pair</h3>
+          <button 
+            className="collapse-toggle"
+            onClick={() => setIsPairingAreaCollapsed(!isPairingAreaCollapsed)}
+            title={isPairingAreaCollapsed ? "Expand pairing area" : "Collapse pairing area"}
+          >
+            {isPairingAreaCollapsed ? '▼' : '▲'}
+          </button>
         </div>
+        {!isPairingAreaCollapsed && (
+          <>
+            <button className="auto-schedule-btn" onClick={handleAutoSchedule}>
+              Auto Schedule
+            </button>
+            <div
+              className="pairing-zone"
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDropOnPairingZone}
+            >
+              <div className="pending-items">
+                {pendingTutor && (
+                  <div className="pending-tutor">
+                    <span>Tutor: {pendingTutor.fullName} ({pendingTutor.grade})</span>
+                    <button onClick={() => setPendingTutor(null)}>×</button>
+                  </div>
+                )}
+                {pendingStudent && (
+                  <div className="pending-student">
+                    <span>Student: {pendingStudent.fullName} ({pendingStudent.grade})</span>
+                    <button onClick={() => setPendingStudent(null)}>×</button>
+                  </div>
+                )}
+                {!pendingTutor && !pendingStudent && pairings.length === 0 && (
+                  <span>Drop tutor and student here to create a pair</span>
+                )}
+                {((pendingTutor && !pendingStudent) || (!pendingTutor && pendingStudent)) && (
+                  <span>Drop the other person to create pair</span>
+                )}
+              </div>
+
+              {/* Active Pairing Block */}
+              {pairings.length > 0 && (
+                <div className="active-pairing">
+                  <div
+                    className="pairing-block"
+                    draggable
+                    onDragStart={(e) => {
+                      setDraggedItem({ item: pairings[0], type: 'pairing' });
+                      e.dataTransfer.effectAllowed = 'move';
+                      e.dataTransfer.setData('text/plain', pairings[0].id);
+                    }}
+                    onClick={() => breakApartPairing(pairings[0].id)}
+                    title="Drag to schedule or click to break apart"
+                  >
+                    <div className="pairing-tutor">
+                      <strong>{pairings[0].tutor.fullName}</strong> ({pairings[0].tutor.grade})
+                    </div>
+                    <div className="pairing-student">
+                      <strong>{pairings[0].student.fullName}</strong> ({pairings[0].student.grade})
+                    </div>
+                    <div className="pairing-instruction">Drag to schedule • Click to break apart</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
