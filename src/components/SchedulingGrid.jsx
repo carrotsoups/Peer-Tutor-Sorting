@@ -20,6 +20,7 @@ const SchedulingGrid = () => {
   const [pendingStudent, setPendingStudent] = useState(null);
   const [pairings, setPairings] = useState([]);
   const [isPairingAreaCollapsed, setIsPairingAreaCollapsed] = useState(false);
+  const [collapseTimeout, setCollapseTimeout] = useState(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
 
@@ -51,6 +52,26 @@ const SchedulingGrid = () => {
   const handleDragStart = (e, item, type, extraData = {}) => {
     setDraggedItem({ item, type, ...extraData });
     e.dataTransfer.effectAllowed = 'move';
+    
+    // Collapse pairing area with a delay to allow dragging to start
+    if (type === 'pairing') {
+      const timeout = setTimeout(() => {
+        setIsPairingAreaCollapsed(true);
+        setCollapseTimeout(null);
+      }, 300); // 300ms delay
+      setCollapseTimeout(timeout);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    // Clear any pending collapse timeout
+    if (collapseTimeout) {
+      clearTimeout(collapseTimeout);
+      setCollapseTimeout(null);
+    }
+    // Reset pairing area collapse state when drag ends
+    setIsPairingAreaCollapsed(false);
   };
 
   // Check if a person is already paired in the schedule
@@ -362,6 +383,7 @@ const SchedulingGrid = () => {
                       className={`pairing-card${pairing.autoScheduled ? ' auto-scheduled' : ''}`}
                       draggable
                       onDragStart={(e) => handleDragStart(e, pairing, 'pairing', { fromDay: day, fromTime: time })}
+                      onDragEnd={handleDragEnd}
                       onClick={() => removePairing(day, time, pairing.id)}
                     >
                       <div className="tutor-info">
@@ -466,11 +488,8 @@ const SchedulingGrid = () => {
                   <div
                     className="pairing-block"
                     draggable
-                    onDragStart={(e) => {
-                      setDraggedItem({ item: pairings[0], type: 'pairing' });
-                      e.dataTransfer.effectAllowed = 'move';
-                      e.dataTransfer.setData('text/plain', pairings[0].id);
-                    }}
+                    onDragStart={(e) => handleDragStart(e, pairings[0], 'pairing')}
+                    onDragEnd={handleDragEnd}
                     onClick={() => breakApartPairing(pairings[0].id)}
                     title="Drag to schedule or click to break apart"
                   >

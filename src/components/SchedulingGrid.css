@@ -317,6 +317,34 @@
   flex: 1;
 }
 
+.pairing-area-collapsed {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+.pairing-area-collapsed .collapse-toggle {
+  background: white;
+  border: 2px solid #bb2822;
+  color: #bb2822;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pairing-area-collapsed .collapse-toggle:hover {
+  background: #bb2822;
+  color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(187, 40, 34, 0.3);
+}
+
 .collapse-toggle {
   background: none;
   border: none;
